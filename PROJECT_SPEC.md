@@ -14,7 +14,7 @@
 | Agentic | Spring Boot 内实现(Scheduler + 按需 API), 调用 Ollama |
 
 > 后端访问 Ollama 用 `localhost:11434`。Android 模拟器访问后端用 `http://10.0.2.2:8080`。
-> 后端必须开 CORS。所有 class/method 顶部加 `@author` Xie Maonan。
+> 后端必须开 CORS。所有 class/method 顶部加 `@author` 
 
 ## 1. 仓库结构
 
