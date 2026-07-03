@@ -35,3 +35,6 @@ logs/
 # ── Personal data & course materials ─────────────────────────────────────────
 Data Export*/
 *.pdf
+~$*.docx
+~$*.xlsx
+~$*.pptx
