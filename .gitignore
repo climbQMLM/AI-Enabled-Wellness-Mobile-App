@@ -1,0 +1,37 @@
+# ── Backend (Maven / Spring Boot) ────────────────────────────────────────────
+backend/target/
+backend/.mvn/repository/
+*.jar
+*.war
+*.class
+
+# ── Android (Gradle) ─────────────────────────────────────────────────────────
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/*.iml
+android/**/*.iml
+android/.idea/
+
+# ── IDE ───────────────────────────────────────────────────────────────────────
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Docker volume data ────────────────────────────────────────────────────────
+mysql-data/
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+logs/
+
+# ── Personal data & course materials ─────────────────────────────────────────
+Data Export*/
+*.pdf

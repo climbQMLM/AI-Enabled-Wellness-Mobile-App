@@ -1,0 +1,56 @@
+# ============================================================================
+# docker-compose.yml — 一键起 MySQL 8 数据库
+# @author Xie Maonan
+#
+# 用法：
+#   docker compose up -d        启动数据库（首次启动会自动建库+建表+灌种子数据）
+#   docker compose down         停止（数据保留在 volume 里，下次 up 不会丢）
+#   docker compose down -v      停止并删除数据卷（彻底重置数据库，慎用）
+#
+# 首次启动时，MySQL 官方镜像会自动按字母顺序执行 ./db 目录下挂载的所有
+# .sql 文件（仅在数据卷为空、即第一次初始化时执行一次）。
+# 所以这里把 schema.sql / seed.sql 挂载进容器的初始化目录，
+# 不需要再手动 docker exec 跑这两个文件了。
+#
+# 如果改了 schema.sql 想重新初始化，要先 `docker compose down -v` 清空数据卷，
+# 再 `docker compose up -d`，否则容器不会重新跑初始化脚本（这是 MySQL 镜像的
+# 设计，不是 bug）。
+# ============================================================================
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: wellness-mysql
+
+    # 后端 application.yml 里的数据库连接要用这几个值，保持一致
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: wellness
+
+    ports:
+      # 宿主机 3307 -> 容器 3306。本机 3306 端口被其他进程占用（可能是本地装的
+      # MySQL/Homebrew 服务），改用 3307 避免冲突。
+      # 后端 application.yml 连接串要写 localhost:3307（如果 Spring Boot 也跑在
+      # Docker 网络里，则容器间用服务名 mysql:3306，不受影响）。
+      - "3307:3306"
+
+    volumes:
+      # 数据持久化，容器删了重建数据还在（除非显式 down -v）
+      - wellness_mysql_data:/var/lib/mysql
+
+      # 初始化脚本：MySQL 镜像启动时若数据目录为空，会自动按文件名顺序执行
+      # /docker-entrypoint-initdb.d/ 下的 .sql 文件。schema 必须在 seed 之前，
+      # 文件名前缀 01_/02_ 保证执行顺序正确。
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ./db/seed.sql:/docker-entrypoint-initdb.d/02_seed.sql:ro
+
+    # 健康检查：后端/脚本可以等这个 healthy 状态再连接，避免容器刚起来
+    # MySQL 还没初始化完就连接报错
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootpass"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  wellness_mysql_data:

@@ -1,0 +1,63 @@
+# ============================================================================
+# application.yml — Spring Boot 配置
+##
+# 注意：JWT secret 写在配置文件里仅为了课程作业方便（不接 Vault/环境变量管理）。
+# 真实生产项目这种密钥绝对不能提交进 git，这里是 toy project 图省事的妥协。
+# ============================================================================
+
+server:
+  port: 8080   # Android 模拟器访问用 http://10.0.2.2:8080，真机/Postman 用 http://localhost:8080
+
+spring:
+  application:
+    name: wellness-backend
+
+  datasource:
+    # 对应 docker-compose.yml 里 wellness-mysql 容器映射到宿主机的端口 3307
+    # （本机 3306 被占用才改成 3307，见 docker-compose.yml 注释）
+    url: jdbc:mysql://localhost:3307/wellness?useSSL=false&serverTimezone=Asia/Singapore&allowPublicKeyRetrieval=true
+    username: root
+    password: rootpass
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      # 表结构已经由 db/schema.sql 建好（docker-compose 启动时自动跑），
+      # 这里用 validate 只校验实体和表是否匹配，不让 Hibernate 自己改表结构，
+      # 避免和 schema.sql 的定义打架。
+      ddl-auto: validate
+    show-sql: true          # 开发期打印 SQL，方便排查问题；上线前可关掉
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false     # 关闭 OSIV，强制在 Service 层内完成懒加载，避免隐藏的 N+1
+
+  servlet:
+    multipart:
+      # RingConn 导入接口要传 zip/csv 文件，调大默认的 1MB 限制
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+# 自定义配置：JWT 相关参数，通过 @ConfigurationProperties 注入到 JwtUtil
+wellness:
+  jwt:
+    # HS256 签名密钥，>= 256 bit；这是用 `openssl rand -base64 64` 生成的随机串，
+    # 仅用于本地开发/课程演示。如果要换，记得所有已签发的 token 都会失效。
+    secret: "2AsFIgPT7cxSuQh3r8y1cZwefax6SbWCQfxs/5+eEUgyI0Jk6qn1yZNVB4NvpB8a4/xwvOP1wRmJGoWcfQor0Q=="
+    # token 有效期：7 天（毫秒数）= 7 * 24 * 60 * 60 * 1000
+    # 单一长期 token，不做 refresh token，过期后用户重新登录即可（见 PROJECT_SPEC.md §4）
+    expiration-ms: 604800000
+
+  # CORS：后端必须开 CORS（PROJECT_SPEC.md §0），允许 Android 模拟器(10.0.2.2)
+  # 和本地浏览器/Postman 调试访问。课程作业图方便直接允许所有来源。
+  cors:
+    allowed-origins: "*"
+
+ollama:
+  # 后端访问 Ollama 用 localhost，因为 Ollama 跑在宿主机，不在 docker 容器里
+  base-url: http://localhost:11434
+  model: llama3:latest
+
+logging:
+  level:
+    sg.edu.nus.iss.wellness: DEBUG

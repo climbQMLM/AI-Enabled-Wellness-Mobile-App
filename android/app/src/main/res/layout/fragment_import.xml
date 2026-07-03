@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Import RingConn Data"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select .csv files (Activity / Vital Signs / Sleep) or a full .zip export package"
+        android:textColor="#666"
+        android:layout_marginBottom="24dp" />
+
+    <Button
+        android:id="@+id/btn_pick_files"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pick Files"
+        android:layout_marginBottom="12dp" />
+
+    <TextView
+        android:id="@+id/tv_selected_files"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No files selected"
+        android:textColor="#888"
+        android:layout_marginBottom="24dp"
+        android:minLines="2" />
+
+    <Button
+        android:id="@+id/btn_import"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start Import"
+        android:enabled="false"
+        android:layout_marginBottom="16dp" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:id="@+id/tv_import_result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
+        android:lineSpacingExtra="4dp"
+        android:visibility="gone" />
+
+</LinearLayout>

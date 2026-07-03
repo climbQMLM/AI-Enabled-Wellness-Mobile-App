@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Item layout for a single chat message -->
+<!-- layoutUser aligned right (sent by user); layoutAssistant aligned left (AI reply)-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="4dp">
+
+    <!-- Hidden content placeholder (both real layouts below are shown/hidden in code) -->
+    <TextView
+        android:id="@+id/tv_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+    <!-- User bubble: right-aligned, blue -->
+    <LinearLayout
+        android:id="@+id/layout_user"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:visibility="gone">
+        <TextView
+            android:id="@+id/tv_user_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="240dp"
+            android:background="@drawable/bubble_user"
+            android:padding="10dp"
+            android:textColor="#fff"
+            android:layout_margin="4dp" />
+    </LinearLayout>
+
+    <!-- AI bubble: left-aligned, grey -->
+    <LinearLayout
+        android:id="@+id/layout_assistant"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:visibility="gone">
+        <TextView
+            android:id="@+id/tv_assistant_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="240dp"
+            android:background="@drawable/bubble_assistant"
+            android:padding="10dp"
+            android:textColor="#333"
+            android:layout_margin="4dp" />
+    </LinearLayout>
+
+</LinearLayout>
