@@ -63,11 +63,13 @@ class LoginActivity : AppCompatActivity() {
             binding.btnSubmit.text = "Login"
             binding.btnSwitchMode.text = "No account? Register"
             binding.tilDisplayName.visibility = View.GONE
+            binding.tvDemoHint.visibility = View.VISIBLE
         } else {
             binding.tvTitle.text = "Register"
             binding.btnSubmit.text = "Register"
             binding.btnSwitchMode.text = "Already have an account? Login"
             binding.tilDisplayName.visibility = View.VISIBLE
+            binding.tvDemoHint.visibility = View.GONE
         }
     }
 
