@@ -34,14 +34,14 @@ A full-stack mobile wellness application that:
 
 ```
 Team6/
-├── backend/          Spring Boot API (auth, wellness CRUD, CSV import, chatbot, agent)
-├── android/          Kotlin app (single-Activity + 5 Fragments + BottomNav)
+├── backend/                Spring Boot API (auth, wellness CRUD, CSV import, chatbot, agent)
+├── android/                Kotlin app (single-Activity + 5 Fragments + BottomNav)
 ├── db/
-│   ├── schema.sql    Table definitions
-│   └── seed.sql      Demo user + sample data
+│   ├── schema.sql          Table definitions
+│   ├── seed.sql            Demo user + sample data
+│   └── sample-data/        Anonymised RingConn CSV exports (Jan–Jun 2026)
 ├── docker-compose.yml
-├── 环境配置清单.docx   Full environment configuration reference
-├── 调试文档.docx       Debug & demo walkthrough
+├── 调试文档.docx            Debug & demo walkthrough
 └── README.md
 ```
 
