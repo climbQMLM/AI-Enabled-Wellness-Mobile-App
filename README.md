@@ -41,7 +41,6 @@ Team6/
 │   ├── seed.sql            Demo user + sample data
 │   └── sample-data/        Anonymised RingConn CSV exports (Jan–Jun 2026)
 ├── docker-compose.yml
-├── 调试文档.docx            Debug & demo walkthrough
 └── README.md
 ```
 
@@ -88,6 +87,29 @@ Password: password123
 
 ---
 
+## Loading Sample Data
+
+After the backend is running, import the bundled RingConn CSVs to populate the dashboard and enable agent analysis:
+
+```bash
+# Get a token
+TOKEN=$(curl -s -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"demo@wellness.app","password":"password123"}' \
+  | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
+
+# Import all three CSV files
+curl -s -X POST http://localhost:8080/api/wellness/import \
+  -H "Authorization: Bearer $TOKEN" \
+  -F "files=@db/sample-data/Activity-2026-01-01-2026-06-29.csv" \
+  -F "files=@db/sample-data/Sleep-2026-01-01-2026-06-29.csv" \
+  -F "files=@db/sample-data/Vital Signs-2026-01-01-2026-06-29.csv"
+```
+
+Or use the **Import** tab in the Android app and pick the files from `db/sample-data/`.
+
+---
+
 ## API Overview
 
 | Method | Endpoint | Description |
@@ -105,6 +127,24 @@ Password: password123
 | GET | `/api/recommendations` | List AI recommendations |
 
 All endpoints except register/login require `Authorization: Bearer <token>`.
+
+### Quick curl test
+
+```bash
+# Register
+curl -s -X POST http://localhost:8080/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"demo@wellness.app","password":"password123","displayName":"Demo"}' | python3 -m json.tool
+
+# Chat
+curl -s -X POST http://localhost:8080/api/chat \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"message":"My sleep has been poor lately, any advice?"}' | python3 -m json.tool
+
+# Trigger agent analysis
+curl -s -X POST http://localhost:8080/api/agent/run \
+  -H "Authorization: Bearer $TOKEN" | python3 -m json.tool
+```
 
 ---
 
@@ -134,18 +174,37 @@ Step 5 — Save       persisted to recommendations table
 
 ---
 
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| CLEARTEXT network error on emulator | Android 9+ blocks HTTP | `android:usesCleartextTraffic="true"` already set in AndroidManifest |
+| App can't reach backend | Wrong IP | Emulator uses `10.0.2.2:8080`; real device uses host LAN IP |
+| Login returns 401 | Token expired or wrong password | Re-login; use `demo@wellness.app / password123` |
+| Chat / Agent times out | Ollama not running or model missing | Run `ollama list` — confirm `llama3:latest` is present |
+| CSV import returns 400 | Column name mismatch | Confirm CSV headers match RingConn export format |
+
+---
+
 ## Environment Notes
 
-- **Emulator networking**: `10.0.2.2` inside the Android emulator maps to the host machine's `localhost`, so the backend URL is `http://10.0.2.2:8080/`.
+- **Emulator networking**: `10.0.2.2` inside the Android emulator maps to the host machine's `localhost`.
 - **Real device**: change `BASE_URL` in `network/ApiClient.kt` to the host LAN IP.
-- **HTTP cleartext**: `android:usesCleartextTraffic="true"` is set in `AndroidManifest.xml` for local dev. Remove for production.
-- **MySQL port**: mapped to host `3307` (not `3306`) to avoid conflicts with any locally installed MySQL instance.
+- **MySQL port**: mapped to host `3307` to avoid conflicts with any locally installed MySQL instance.
+- **Ollama timeout**: read timeout is set to 120 s — `llama3` inference can be slow on CPU.
+
+---
+
+## Reset Database
+
+```bash
+docker compose down -v && docker compose up -d
+```
+
+This wipes all data and re-runs `schema.sql` + `seed.sql` from scratch.
 
 ---
 
 ## Vibe Coding Note
 
 Every module in this project — from the Spring Security JWT filter to the Ollama agentic pipeline to the Android EncryptedSharedPreferences session manager — was built entirely through conversational AI-assisted development. No boilerplate was typed by hand. The entire development process, including architecture planning, debugging 220 compile errors, fixing Gradle plugin conflicts, and translating the UI to English, happened through natural language prompts.
-
----
-
